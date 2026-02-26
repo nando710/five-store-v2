@@ -30,7 +30,7 @@ export function Checkout() {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
-    const { items, subtotal, placeOrder, clearCart } = useCart();
+    const { items, subtotal, placeOrder } = useCart();
 
     const shippingCost: number = location.state?.shippingCost || 0;
     const total = subtotal + shippingCost;

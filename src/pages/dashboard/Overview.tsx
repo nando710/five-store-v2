@@ -176,7 +176,7 @@ export function Overview() {
                                     dataKey="value"
                                     stroke="none"
                                 >
-                                    {statusData.map((entry, index) => (
+                                    {statusData.map((_, index) => (
                                         <Cell key={`cell-${index}`} fill={PIE_COLOR} />
                                     ))}
                                 </Pie>
