@@ -213,6 +213,11 @@ app.get('/api/health', (req, res) => {
 const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
 
+// Fallback all unknown API routes to 404 to avoid sending HTML
+app.all('/api/*', (req, res) => {
+    res.status(404).json({ error: 'API endpoint não encontrado' });
+});
+
 // Fallback all unknown routes to index.html (React Router will handle them)
 app.get('/*splat', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));

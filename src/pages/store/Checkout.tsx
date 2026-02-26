@@ -93,7 +93,9 @@ export function Checkout() {
                 };
             }
 
-            const response = await fetch('/api/create-payment', {
+            // Force the API base URL if provided in env, else use standard relative but with exact path
+            const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+            const response = await fetch(`${API_BASE_URL}/api/create-payment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
