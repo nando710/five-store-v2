@@ -60,11 +60,11 @@ async function findOrCreateCustomer(profile) {
 
     // Create new customer
     const customer = await asaasRequest('/v3/customers', 'POST', {
-        name: profile.store_name || profile.name,
-        email: profile.email,
+        name: profile.store_name || profile.name || 'Cliente SS',
+        email: profile.email || 'cliente@fivestore.com',
         phone: profile.phone?.replace(/\D/g, '') || undefined,
-        cpfCnpj: cpfCnpj || undefined,
-        notificationDisabled: false
+        cpfCnpj: (cpfCnpj && cpfCnpj !== '00000000000' && cpfCnpj.length >= 11) ? cpfCnpj : undefined,
+        notificationDisabled: true
     });
 
     return customer.id;
