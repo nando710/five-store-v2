@@ -48,6 +48,10 @@ export function Checkout() {
     const [cardExpiry, setCardExpiry] = useState('');
     const [cardCvv, setCardCvv] = useState('');
 
+    // Customer Billing Info (required for PIX/Boleto generation on Asaas Sandbox)
+    const [customerDocument, setCustomerDocument] = useState(user?.cnpj || '');
+    const [customerPhone, setCustomerPhone] = useState(user?.phone || '');
+
     const handlePayment = async () => {
         if (items.length === 0) return;
         setError('');
@@ -71,6 +75,8 @@ export function Checkout() {
             const payload: any = {
                 orderId: newOrderId,
                 billingType: paymentMethod,
+                customerDocument: customerDocument.replace(/\D/g, ''),
+                customerPhone: customerPhone.replace(/\D/g, '')
             };
 
             // Add credit card details if applicable
@@ -85,9 +91,9 @@ export function Checkout() {
                 };
                 payload.creditCardHolderInfo = {
                     name: cardName || user?.name,
-                    cpfCnpj: user?.cnpj?.replace(/\D/g, '') || '',
+                    cpfCnpj: customerDocument.replace(/\D/g, ''),
                     email: user?.email || '',
-                    phone: user?.phone?.replace(/\D/g, '') || '',
+                    phone: customerPhone.replace(/\D/g, ''),
                     postalCode: '',
                     addressNumber: '',
                 };
@@ -307,9 +313,20 @@ export function Checkout() {
                                     </div>
                                     <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Aprovação Instantânea</span>
                                 </div>
+
                                 {paymentMethod === 'PIX' && (
-                                    <div className="mt-4 pl-7 text-sm text-surface-500 border-t border-brand-200 pt-4">
-                                        Ao finalizar, um QR Code será gerado. Você terá 15 minutos para pagar no app do seu banco.
+                                    <div className="mt-4 pl-7 text-sm text-surface-500 border-t border-brand-200 pt-4 space-y-4">
+                                        <p>Ao finalizar, um QR Code será gerado. Você terá 15 minutos para pagar no app do seu banco.</p>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="col-span-1">
+                                                <label className="block text-xs font-semibold text-surface-700 mb-1">Seu CPF / CNPJ <span className="text-red-500">*</span></label>
+                                                <input type="text" placeholder="000.000.000-00" value={customerDocument} onChange={e => setCustomerDocument(e.target.value)} className="w-full px-3 py-2 border border-surface-300 rounded-lg outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm" required />
+                                            </div>
+                                            <div className="col-span-1">
+                                                <label className="block text-xs font-semibold text-surface-700 mb-1">Telefone Celular <span className="text-red-500">*</span></label>
+                                                <input type="text" placeholder="(11) 90000-0000" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full px-3 py-2 border border-surface-300 rounded-lg outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm" required />
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </label>
@@ -326,8 +343,16 @@ export function Checkout() {
                                 {paymentMethod === 'CREDIT_CARD' && (
                                     <div className="mt-4 pl-7 space-y-4 border-t border-brand-200 pt-4">
                                         <div className="grid grid-cols-2 gap-4">
+                                            <div className="col-span-1">
+                                                <label className="block text-xs font-semibold text-surface-700 mb-1">CPF / CNPJ do Titular <span className="text-red-500">*</span></label>
+                                                <input type="text" placeholder="000.000.000-00" value={customerDocument} onChange={e => setCustomerDocument(e.target.value)} className="w-full px-3 py-2 border border-surface-300 rounded-lg outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm" required />
+                                            </div>
+                                            <div className="col-span-1">
+                                                <label className="block text-xs font-semibold text-surface-700 mb-1">Telefone <span className="text-red-500">*</span></label>
+                                                <input type="text" placeholder="(11) 90000-0000" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full px-3 py-2 border border-surface-300 rounded-lg outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm" required />
+                                            </div>
                                             <div className="col-span-2">
-                                                <label className="block text-xs font-semibold text-surface-700 mb-1">Número do Cartão</label>
+                                                <label className="block text-xs font-semibold text-surface-700 mb-1">Número do Cartão <span className="text-red-500">*</span></label>
                                                 <input type="text" placeholder="0000 0000 0000 0000" value={cardNumber} onChange={e => setCardNumber(e.target.value)} className="w-full px-3 py-2 border border-surface-300 rounded-lg outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm" />
                                             </div>
                                             <div className="col-span-2">
@@ -360,8 +385,18 @@ export function Checkout() {
                                     <span className="text-xs bg-surface-100 text-surface-600 px-2 py-0.5 rounded font-bold">Venc. 3 dias</span>
                                 </div>
                                 {paymentMethod === 'BOLETO' && (
-                                    <div className="mt-4 pl-7 text-sm text-surface-500 border-t border-brand-200 pt-4">
-                                        O boleto será gerado ao final. A compensação pode levar até 2 dias úteis.
+                                    <div className="mt-4 pl-7 text-sm text-surface-500 border-t border-brand-200 pt-4 space-y-4">
+                                        <p>O boleto será gerado ao final. A compensação pode levar até 2 dias úteis.</p>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="col-span-1">
+                                                <label className="block text-xs font-semibold text-surface-700 mb-1">Seu CPF / CNPJ <span className="text-red-500">*</span></label>
+                                                <input type="text" placeholder="000.000.000-00" value={customerDocument} onChange={e => setCustomerDocument(e.target.value)} className="w-full px-3 py-2 border border-surface-300 rounded-lg outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm" required />
+                                            </div>
+                                            <div className="col-span-1">
+                                                <label className="block text-xs font-semibold text-surface-700 mb-1">Telefone Celular <span className="text-red-500">*</span></label>
+                                                <input type="text" placeholder="(11) 90000-0000" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full px-3 py-2 border border-surface-300 rounded-lg outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm" required />
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </label>

@@ -47,13 +47,16 @@ async function asaasRequest(endpoint, method, body) {
     return data;
 }
 
-async function findOrCreateCustomer(profile) {
-    const cpfCnpj = profile.cnpj?.replace(/\D/g, '') || '';
+async function findOrCreateCustomer(profile, reqDocument, reqPhone) {
+    // 1. Prioritize the document/phone passed from checkout, fallback to profile
+    let cpfCnpj = (reqDocument || profile.cnpj || '').replace(/\D/g, '');
+    let phoneStr = (reqPhone || profile.phone || '').replace(/\D/g, '');
 
     // Try to find existing customer
     if (cpfCnpj) {
         const existing = await asaasRequest(`/v3/customers?cpfCnpj=${cpfCnpj}`, 'GET');
         if (existing.data?.length > 0) {
+            // Update customer with correct phone if needed
             return existing.data[0].id;
         }
     }
@@ -62,7 +65,7 @@ async function findOrCreateCustomer(profile) {
     const customer = await asaasRequest('/v3/customers', 'POST', {
         name: profile.store_name || profile.name || 'Cliente SS',
         email: profile.email || 'cliente@fivestore.com',
-        phone: profile.phone?.replace(/\D/g, '') || undefined,
+        phone: phoneStr || undefined,
         cpfCnpj: (cpfCnpj && cpfCnpj !== '00000000000' && cpfCnpj.length >= 11) ? cpfCnpj : undefined,
         notificationDisabled: true
     });
@@ -118,9 +121,11 @@ app.post('/api/create-payment', authMiddleware, async (req, res) => {
         }
 
         // 3. Find or create Asaas customer
+        const { customerDocument, customerPhone } = req.body;
+
         let customerId = profile.asaas_customer_id;
-        if (!customerId) {
-            customerId = await findOrCreateCustomer(profile);
+        if (!customerId || customerDocument) {
+            customerId = await findOrCreateCustomer(profile, customerDocument, customerPhone);
             await supabaseAdmin
                 .from('profiles')
                 .update({ asaas_customer_id: customerId })
