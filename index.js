@@ -214,7 +214,7 @@ const distPath = path.join(__dirname, 'dist');
 app.use(express.static(distPath));
 
 // Fallback all unknown API routes to 404 to avoid sending HTML
-app.all('/api/*', (req, res) => {
+app.all('/api/*splat', (req, res) => {
     res.status(404).json({ error: 'API endpoint não encontrado' });
 });
 
