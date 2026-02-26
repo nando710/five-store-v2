@@ -1,0 +1,1 @@
+fetch('http://supabasekong-cscgg0cosw0co4gsko4c040k.187.77.61.130.sslip.io/auth/v1/token?grant_type=password', { method: 'OPTIONS', headers: { 'Origin': 'http://localhost:5173', 'Access-Control-Request-Method': 'POST' } }).then(async r => { console.log('STATUS:', r.status); r.headers.forEach((v,k) => console.log(k,':',v)); }).catch(console.error);

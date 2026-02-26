@@ -1,0 +1,8 @@
+STATUS: 200
+access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT
+access-control-allow-origin: *
+content-length: 0
+date: Thu, 26 Feb 2026 13:55:39 GMT
+server: kong/2.8.1
+vary: Accept-Encoding
+x-kong-response-latency: 0

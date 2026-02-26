@@ -1,0 +1,9 @@
+STATUS: 200
+access-control-allow-headers: apikey, authorization, content-type, x-client-info
+access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,TRACE,CONNECT
+access-control-allow-origin: *
+content-length: 0
+date: Thu, 26 Feb 2026 13:56:39 GMT
+server: kong/2.8.1
+vary: Accept-Encoding
+x-kong-response-latency: 1
